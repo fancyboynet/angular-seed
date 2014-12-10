@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>test</title>
+    <style>
+        .pullDownTip, .pullDownReleaseTip{
+            padding: 30px 0 10px;
+            background: red;
+        }
+        .pullDownTip:before{
+            content: '下拉刷新';
+        }
+        .pullDownReleaseTip:before{
+            content: '释放刷新';
+        }
+        .pullUpTip, .pullUpReleaseTip{
+            padding: 10px 0 30px;
+            background: red;
+        }
+        .pullUpTip:before{
+            content: '上拉加载更多';
+        }
+        .pullUpReleaseTip:before{
+            content: '释放加载更多';
+        }
+    </style>
+</head>
+<body ng-app="myApp">
+<!--<my-button></my-button>-->
+<div style="position: relative;background: lime;height:100px;" ng-controller="ScrollController">
+    <my-scroll
+            my-scroll-pull-down-tip-class="pullDownTip"
+            my-scroll-pull-down-release-tip-class="pullDownReleaseTip"
+            my-scroll-pull-up-tip-class="pullUpTip"
+            my-scroll-pull-up-release-tip-class="pullUpReleaseTip"
+            my-scroll-onRefresh="onRefresh()">
+        <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </my-scroll>
+</div>
+<!--<script src="lib/iscroll-lite.js"></script>-->
+<script src="lib/iscroll-probe.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="directives/myButton/myButton.js"></script>
+<link rel="stylesheet" href="directives/myScroll/myScroll.css" />
+<script src="directives/myScroll/myScroll.js"></script>
+<script>
+  'use strict';
+  angular.module('myApp', [
+              'myApp.myDirectives.myButton',
+              'myApp.myDirectives.myScroll'
+          ])
+          .controller('ScrollController', function($scope){
+              $scope.onRefresh = function(){
+                  console.log('onRefresh');
+              }
+          });
+</script>
+</body>
+</html>
