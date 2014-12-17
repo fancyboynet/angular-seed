@@ -1,6 +1,6 @@
 'use strict';
 angular.module('myApp.myDirectives.myScroll', [])
-    .directive('myScroll', function($log, $window) {
+    .directive('myScroll', function($log, $timeout) {
         return{
             restrict: 'E',
             scope: {
@@ -47,38 +47,73 @@ angular.module('myApp.myDirectives.myScroll', [])
                     var pullDownTips = function(){
                         $log.log('pullDownTips');
                         if(scope.pullDownTipClassName){
+                            setIsPull(true);
+                            showPullTop();
                             scrollerTop.attr('class', scope.pullDownTipClassName);
                         }
                     };
                     var pullDownReleaseTips = function(){
                         $log.log('pullDownReleaseTips');
                         if(scope.pullDownReleaseTipClassName){
+                            setIsPull(true);
+                            showPullTop();
                             scrollerTop.attr('class', scope.pullDownReleaseTipClassName);
                         }
                     };
                     var pullUpTips = function(){
                         if(scope.pullUpTipClassName){
-                            scrollerTop.attr('class', scope.pullUpTipClassName);
+                            scrollerBottom.attr('class', scope.pullUpTipClassName);
                         }
                     };
                     var pullUpReleaseTips = function(){
                         if(scope.pullUpReleaseTipClassName){
-                            scrollerTop.attr('class', scope.pullUpReleaseTipClassName);
+                            scrollerBottom.attr('class', scope.pullUpReleaseTipClassName);
                         }
                     };
-                    scroller.css({
-                        marginTop : -scrollerTopHeight + "px"
-                    });
+                    var refreshId;
+                    var isPull = false;
+                    var setIsPull = function(b){
+                        isPull = !!b;
+                    };
+                    var getIsPull = function(){
+                        return isPull;
+                    };
+                    var refreshScroll = function(){
+                        if(!getIsPull()){
+                            return;
+                        }
+                        if(refreshId){
+                            $timeout.cancel(refreshId);
+                        }
+                        //refreshId = $timeout(function(){
+                        //    setIsPull(false);
+                        //    resetPull();
+                        //    scroll.refresh();
+                        //}, 0, false);
+                    };
+                    var resetPull = function(){
+                        //scrollerTop[0].style.display = 'none';
+                        //scrollerBottom[0].style.display = 'none';
+                    };
+                    var showPullTop = function(){
+                        scrollerTop[0].style.display = 'block';
+                    };
+                    var showPullBottom = function(){
+                        scrollerBottom[0].style.display = 'block';
+                    };
+                    resetPull();
                     scroll = new IScroll(wrapper[0], {
                         snap : true,
                         probeType : 1,
                         click : true
                     });
+                    scroll.maxScrollY = -500;
                     scroll.on('refresh', function(){
                         $log.log('refresh');
                     });
                     scroll.on('scroll', function(){
-                        $log.log('scroll', this.y, this.maxScrollY, pullDownOffset, pullUpOffset);
+                        $log.log('scroll', this, this.maxScrollY, pullDownOffset, pullUpOffset);
+                        resetPull();
                         if(this.y > 0 && this.y < pullDownOffset){
                             pullDownTips();
                             return;
@@ -87,17 +122,18 @@ angular.module('myApp.myDirectives.myScroll', [])
                             pullDownReleaseTips();
                             return;
                         }
-                        if(this.y > (this.maxScrollY - pullUpOffset + scrollerBottomHeight) && this.y < (this.maxScrollY + scrollerBottomHeight)){
+                        if(this.y > (this.maxScrollY - pullUpOffset) && this.y < this.maxScrollY){
                             pullUpTips();
                             return;
                         }
-                        if(this.y < (this.maxScrollY - pullUpOffset + scrollerBottomHeight)){
+                        if(this.y < (this.maxScrollY - pullUpOffset )){
                             pullUpReleaseTips();
                             return;
                         }
                     });
                     scroll.on('scrollEnd', function(){
                         $log.log('scrollEnd', this.y);
+                        refreshScroll();
                     });
                 };
                 angular.element(document).ready(function(){
